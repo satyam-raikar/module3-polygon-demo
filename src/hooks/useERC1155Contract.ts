@@ -39,7 +39,7 @@ export const useERC1155Contract = ({
   };
 
   // Load balances and approval status
-  const loadBalancesAndApproval = async (tradeContractAddress: string) => {
+  const loadBalancesAndApproval = async () => {
     if (!isWalletConnected || typeof window.ethereum === "undefined") return;
 
     try {
@@ -72,10 +72,11 @@ export const useERC1155Contract = ({
 
       setBalances(newBalances);
 
-      // Check if contract is approved
+      // Check if the ERC1155 contract itself is approved (for burns)
+      // We check if the contract is approved to operate on its own tokens
       const approved = await contract.isApprovedForAll(
         userAddress,
-        tradeContractAddress
+        contractAddress
       );
       setIsApproved(approved);
     } catch (error) {
@@ -86,13 +87,14 @@ export const useERC1155Contract = ({
   };
 
   // Approve contract for burning tokens
-  const handleApproval = async (tradeContractAddress: string) => {
+  const handleApproval = async () => {
     if (!isWalletConnected) return { success: false, error: "Wallet not connected" };
 
     try {
       setCheckingApproval(true);
       const contract = await getWriteContract();
-      const tx = await contract.setApprovalForAll(tradeContractAddress, true);
+      // Approve the ERC1155 contract itself to enable burns
+      const tx = await contract.setApprovalForAll(contractAddress, true);
       await tx.wait();
       setIsApproved(true);
       return { success: true };
@@ -105,13 +107,14 @@ export const useERC1155Contract = ({
   };
 
   // Revoke contract approval
-  const handleRevoke = async (tradeContractAddress: string) => {
+  const handleRevoke = async () => {
     if (!isWalletConnected) return { success: false, error: "Wallet not connected" };
 
     try {
       setCheckingApproval(true);
       const contract = await getWriteContract();
-      const tx = await contract.setApprovalForAll(tradeContractAddress, false);
+      // Revoke approval from the ERC1155 contract
+      const tx = await contract.setApprovalForAll(contractAddress, false);
       await tx.wait();
       setIsApproved(false);
       return { success: true };

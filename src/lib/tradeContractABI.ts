@@ -57,5 +57,5 @@ export const TRADE_CONTRACT_ABI = [
   },
 ] as const;
 
-// Trade contract address - will be updated when provided
-export const TRADE_CONTRACT_ADDRESS = "0x534A5357cED3e9C7d31173630440dD9663ff50b6";
+// No separate trade contract - using ERC1155 contract directly
+export const TRADE_CONTRACT_ADDRESS = "";
