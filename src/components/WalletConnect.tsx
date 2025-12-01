@@ -119,7 +119,7 @@ export const WalletConnect = () => {
             Switch to Polygon
           </BrutalButton>
         )}
-        <BrutalButton size="sm" variant="outline" onClick={disconnect}>
+        <BrutalButton size="sm" variant="outline" onClick={disconnect} className="h-auto py-3">
           Disconnect
         </BrutalButton>
       </div>
