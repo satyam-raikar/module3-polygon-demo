@@ -23,20 +23,12 @@ export const ContractInteraction = ({
   // Input states for view functions
   const [balanceOfAddress, setBalanceOfAddress] = useState("");
   const [balanceOfTokenId, setBalanceOfTokenId] = useState("");
-  const [existsTokenId, setExistsTokenId] = useState("");
-  const [totalSupplyId, setTotalSupplyId] = useState("");
-  const [maxSupplyId, setMaxSupplyId] = useState("");
   const [uriTokenId, setUriTokenId] = useState("");
   const [isApprovedAccount, setIsApprovedAccount] = useState("");
   const [isApprovedOperator, setIsApprovedOperator] = useState("");
   const [supportsInterfaceId, setSupportsInterfaceId] = useState("");
 
   // Write function states
-  const [mintToAddress, setMintToAddress] = useState("");
-  const [mintTokenId, setMintTokenId] = useState("");
-  const [burnAddress, setBurnAddress] = useState("");
-  const [burnTokenId, setBurnTokenId] = useState("");
-  const [burnAmount, setBurnAmount] = useState("");
   const [setApprovalOperator, setSetApprovalOperator] = useState("");
   const [setApprovalBool, setSetApprovalBool] = useState(false);
   const [transferFrom, setTransferFrom] = useState("");
@@ -124,64 +116,6 @@ export const ContractInteraction = ({
       </TabsList>
 
       <TabsContent value="default" className="space-y-6 mt-6">
-        {/* Contract Info */}
-        <BrutalCard>
-          <BrutalCardHeader>
-            <BrutalCardTitle>Contract Information</BrutalCardTitle>
-          </BrutalCardHeader>
-          <BrutalCardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <BrutalButton
-                  onClick={() => handleViewFunction("contractURI")}
-                  disabled={loading === "contractURI"}
-                  size="sm"
-                  variant="secondary"
-                  className="w-full"
-                >
-                  {loading === "contractURI" ? "Loading..." : "Contract URI"}
-                </BrutalButton>
-                {results.contractURI && (
-                  <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-xs break-all">
-                    {results.contractURI}
-                  </div>
-                )}
-              </div>
-              <div>
-                <BrutalButton
-                  onClick={() => handleViewFunction("owner")}
-                  disabled={loading === "owner"}
-                  size="sm"
-                  variant="secondary"
-                  className="w-full"
-                >
-                  {loading === "owner" ? "Loading..." : "Get Owner"}
-                </BrutalButton>
-                {results.owner && (
-                  <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-xs break-all">
-                    {results.owner}
-                  </div>
-                )}
-              </div>
-              <div>
-                <BrutalButton
-                  onClick={() => handleViewFunction("marketplaceAddr")}
-                  disabled={loading === "marketplaceAddr"}
-                  size="sm"
-                  variant="secondary"
-                  className="w-full"
-                >
-                  {loading === "marketplaceAddr" ? "Loading..." : "Marketplace"}
-                </BrutalButton>
-                {results.marketplaceAddr && (
-                  <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-xs break-all">
-                    {results.marketplaceAddr}
-                  </div>
-                )}
-              </div>
-            </div>
-          </BrutalCardContent>
-        </BrutalCard>
 
         {/* View Functions */}
         <BrutalCard>
@@ -221,77 +155,35 @@ export const ContractInteraction = ({
               )}
             </div>
 
-            {/* Token Exists */}
+            {/* Balance Of Batch */}
             <div className="space-y-2">
-              <label className="text-sm font-bold uppercase">Token Exists</label>
-              <div className="flex gap-2">
+              <label className="text-sm font-bold uppercase">Balance Of Batch</label>
+              <div className="space-y-2">
                 <BrutalInput
-                  placeholder="Token ID"
-                  type="number"
-                  value={existsTokenId}
-                  onChange={(e) => setExistsTokenId(e.target.value)}
+                  placeholder="Addresses (comma-separated)"
+                  value={results.batchAddresses || ""}
+                  onChange={(e) => setResults({ ...results, batchAddresses: e.target.value })}
+                />
+                <BrutalInput
+                  placeholder="Token IDs (comma-separated)"
+                  value={results.batchTokenIds || ""}
+                  onChange={(e) => setResults({ ...results, batchTokenIds: e.target.value })}
                 />
                 <BrutalButton
-                  onClick={() => handleViewFunction("exists", [existsTokenId])}
-                  disabled={loading === "exists" || !existsTokenId}
+                  onClick={() => {
+                    const addresses = (results.batchAddresses || "").split(",").map((a: string) => a.trim());
+                    const ids = (results.batchTokenIds || "").split(",").map((id: string) => id.trim());
+                    handleViewFunction("balanceOfBatch", [addresses, ids]);
+                  }}
+                  disabled={loading === "balanceOfBatch" || !results.batchAddresses || !results.batchTokenIds}
                   size="sm"
                 >
                   Query
                 </BrutalButton>
               </div>
-              {results.exists !== undefined && (
+              {results.balanceOfBatch && (
                 <div className="p-3 bg-muted border-2 border-border font-mono text-sm">
-                  Exists: {results.exists}
-                </div>
-              )}
-            </div>
-
-            {/* Total Supply */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase">Total Supply</label>
-              <div className="flex gap-2">
-                <BrutalInput
-                  placeholder="Token ID"
-                  type="number"
-                  value={totalSupplyId}
-                  onChange={(e) => setTotalSupplyId(e.target.value)}
-                />
-                <BrutalButton
-                  onClick={() => handleViewFunction("totalSupply", [totalSupplyId])}
-                  disabled={loading === "totalSupply" || !totalSupplyId}
-                  size="sm"
-                >
-                  Query
-                </BrutalButton>
-              </div>
-              {results.totalSupply && (
-                <div className="p-3 bg-muted border-2 border-border font-mono text-sm">
-                  Total Supply: {results.totalSupply}
-                </div>
-              )}
-            </div>
-
-            {/* Max Supply */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase">Max Supply</label>
-              <div className="flex gap-2">
-                <BrutalInput
-                  placeholder="Token ID"
-                  type="number"
-                  value={maxSupplyId}
-                  onChange={(e) => setMaxSupplyId(e.target.value)}
-                />
-                <BrutalButton
-                  onClick={() => handleViewFunction("maxSupply", [maxSupplyId])}
-                  disabled={loading === "maxSupply" || !maxSupplyId}
-                  size="sm"
-                >
-                  Query
-                </BrutalButton>
-              </div>
-              {results.maxSupply && (
-                <div className="p-3 bg-muted border-2 border-border font-mono text-sm">
-                  Max Supply: {results.maxSupply}
+                  Balances: {results.balanceOfBatch}
                 </div>
               )}
             </div>
@@ -391,65 +283,6 @@ export const ContractInteraction = ({
             <BrutalCardTitle>Write Functions</BrutalCardTitle>
           </BrutalCardHeader>
           <BrutalCardContent className="space-y-6">
-            {/* Mint */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase">Mint Token</label>
-              <div className="flex gap-2">
-                <BrutalInput
-                  placeholder="Recipient address"
-                  value={mintToAddress}
-                  onChange={(e) => setMintToAddress(e.target.value)}
-                />
-                <BrutalInput
-                  placeholder="Token ID"
-                  type="number"
-                  value={mintTokenId}
-                  onChange={(e) => setMintTokenId(e.target.value)}
-                />
-                <BrutalButton
-                  onClick={() => handleWriteFunction("mint", [mintToAddress, mintTokenId])}
-                  disabled={loading === "mint" || !mintToAddress || !mintTokenId}
-                  size="sm"
-                  variant="destructive"
-                >
-                  Execute
-                </BrutalButton>
-              </div>
-            </div>
-
-            {/* Burn */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase">Burn Token</label>
-              <div className="flex gap-2">
-                <BrutalInput
-                  placeholder="Account address"
-                  value={burnAddress}
-                  onChange={(e) => setBurnAddress(e.target.value)}
-                />
-                <BrutalInput
-                  placeholder="Token ID"
-                  type="number"
-                  value={burnTokenId}
-                  onChange={(e) => setBurnTokenId(e.target.value)}
-                />
-                <BrutalInput
-                  placeholder="Amount"
-                  type="number"
-                  value={burnAmount}
-                  onChange={(e) => setBurnAmount(e.target.value)}
-                />
-                <BrutalButton
-                  onClick={() =>
-                    handleWriteFunction("burn", [burnAddress, burnTokenId, burnAmount])
-                  }
-                  disabled={loading === "burn" || !burnAddress || !burnTokenId || !burnAmount}
-                  size="sm"
-                  variant="destructive"
-                >
-                  Execute
-                </BrutalButton>
-              </div>
-            </div>
 
             {/* Set Approval For All */}
             <div className="space-y-2">
@@ -524,6 +357,57 @@ export const ContractInteraction = ({
                     !transferTo ||
                     !transferTokenId ||
                     !transferAmount
+                  }
+                  size="sm"
+                  variant="destructive"
+                >
+                  Execute
+                </BrutalButton>
+              </div>
+            </div>
+
+            {/* Safe Batch Transfer From */}
+            <div className="space-y-2">
+              <label className="text-sm font-bold uppercase">Safe Batch Transfer From</label>
+              <div className="space-y-2">
+                <BrutalInput
+                  placeholder="From address"
+                  value={results.batchTransferFrom || ""}
+                  onChange={(e) => setResults({ ...results, batchTransferFrom: e.target.value })}
+                />
+                <BrutalInput
+                  placeholder="To address"
+                  value={results.batchTransferTo || ""}
+                  onChange={(e) => setResults({ ...results, batchTransferTo: e.target.value })}
+                />
+                <BrutalInput
+                  placeholder="Token IDs (comma-separated)"
+                  value={results.batchTransferIds || ""}
+                  onChange={(e) => setResults({ ...results, batchTransferIds: e.target.value })}
+                />
+                <BrutalInput
+                  placeholder="Amounts (comma-separated)"
+                  value={results.batchTransferAmounts || ""}
+                  onChange={(e) => setResults({ ...results, batchTransferAmounts: e.target.value })}
+                />
+                <BrutalButton
+                  onClick={() => {
+                    const ids = (results.batchTransferIds || "").split(",").map((id: string) => id.trim());
+                    const amounts = (results.batchTransferAmounts || "").split(",").map((amt: string) => amt.trim());
+                    handleWriteFunction("safeBatchTransferFrom", [
+                      results.batchTransferFrom,
+                      results.batchTransferTo,
+                      ids,
+                      amounts,
+                      "0x",
+                    ]);
+                  }}
+                  disabled={
+                    loading === "safeBatchTransferFrom" ||
+                    !results.batchTransferFrom ||
+                    !results.batchTransferTo ||
+                    !results.batchTransferIds ||
+                    !results.batchTransferAmounts
                   }
                   size="sm"
                   variant="destructive"
