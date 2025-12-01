@@ -84,7 +84,7 @@ export const CustomMintingWorkflows = ({
   contractAddress,
   isWalletConnected,
 }: CustomMintingWorkflowsProps) => {
-  const [loading, setLoading] = useState<number | null>(null);
+  const [loading, setLoading] = useState<number | string | null>(null);
   const [cooldowns, setCooldowns] = useState<{ [key: number]: number }>({});
   const [timeRemaining, setTimeRemaining] = useState<{ [key: number]: number }>({});
   const [balances, setBalances] = useState<{ [key: number]: number }>({});
@@ -768,20 +768,7 @@ export const CustomMintingWorkflows = ({
           </BrutalCard>
         )}
 
-        {isWalletConnected && !isApproved && (
-          <BrutalCard>
-            <BrutalCardContent className="py-6">
-              <div className="text-center">
-                <p className="text-lg font-bold mb-2">Approval Required</p>
-                <p className="text-muted-foreground">
-                  You need to approve the contract first to trade tokens
-                </p>
-              </div>
-            </BrutalCardContent>
-          </BrutalCard>
-        )}
-
-        {isWalletConnected && isApproved && (
+        {isWalletConnected && (
           <BrutalCard>
             <BrutalCardContent className="py-6">
               <div className="space-y-4">
@@ -808,7 +795,16 @@ export const CustomMintingWorkflows = ({
                           </BrutalCardTitle>
                         </BrutalCardHeader>
                         <BrutalCardContent className="space-y-3">
-                          {balance > 0 ? (
+                          {!isApproved ? (
+                            <BrutalButton
+                              onClick={handleApproval}
+                              disabled={loading === "approval"}
+                              className="w-full"
+                              variant="outline"
+                            >
+                              {loading === "approval" ? "Approving..." : "Approval Required"}
+                            </BrutalButton>
+                          ) : balance > 0 ? (
                             <>
                               {selectedTradeToken === tokenId ? (
                                 <div className="space-y-2">
