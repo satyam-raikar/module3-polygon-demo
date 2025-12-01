@@ -97,6 +97,7 @@ export const CustomMintingWorkflows = ({
     checkingApproval,
     loadBalancesAndApproval,
     handleApproval: handleERC1155Approval,
+    handleRevoke: handleERC1155Revoke,
   } = useERC1155Contract({
     contractAddress,
     isWalletConnected,
@@ -217,6 +218,15 @@ export const CustomMintingWorkflows = ({
       toast.success("Contract approved! You can now forge, burn, and trade tokens.");
     } else {
       toast.error(`Failed to approve contract: ${result.error}`);
+    }
+  };
+
+  const handleRevoke = async () => {
+    const result = await handleERC1155Revoke(tradeContractAddress);
+    if (result.success) {
+      toast.success("Contract approval revoked successfully.");
+    } else {
+      toast.error(`Failed to revoke approval: ${result.error}`);
     }
   };
 
@@ -478,7 +488,29 @@ export const CustomMintingWorkflows = ({
         )}
 
         {isWalletConnected && isApproved && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <>
+            <BrutalCard>
+              <BrutalCardContent className="py-6">
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <p className="text-lg font-bold mb-2 text-primary">✓ Contract Approved</p>
+                    <p className="text-muted-foreground">
+                      You can now forge, burn, and trade tokens
+                    </p>
+                  </div>
+
+                  <BrutalButton
+                    onClick={handleRevoke}
+                    disabled={checkingApproval}
+                    className="w-full"
+                    variant="destructive"
+                  >
+                    {checkingApproval ? "Revoking..." : "Revoke Approval"}
+                  </BrutalButton>
+                </div>
+              </BrutalCardContent>
+            </BrutalCard>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TOKEN_INFO.filter((t) => !t.isMintable).map((token) => {
               const recipe = BURN_RECIPES[token.id];
               const canMint = canMintBurnToken(token.id);
@@ -566,6 +598,7 @@ export const CustomMintingWorkflows = ({
               );
             })}
           </div>
+          </>
         )}
       </div>
 

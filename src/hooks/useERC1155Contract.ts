@@ -104,6 +104,25 @@ export const useERC1155Contract = ({
     }
   };
 
+  // Revoke contract approval
+  const handleRevoke = async (tradeContractAddress: string) => {
+    if (!isWalletConnected) return { success: false, error: "Wallet not connected" };
+
+    try {
+      setCheckingApproval(true);
+      const contract = await getWriteContract();
+      const tx = await contract.setApprovalForAll(tradeContractAddress, false);
+      await tx.wait();
+      setIsApproved(false);
+      return { success: true };
+    } catch (error: any) {
+      console.error("Error revoking approval:", error);
+      return { success: false, error: error.message };
+    } finally {
+      setCheckingApproval(false);
+    }
+  };
+
   // Reload balances when wallet connection changes
   useEffect(() => {
     if (isWalletConnected) {
@@ -119,6 +138,7 @@ export const useERC1155Contract = ({
     loading,
     loadBalancesAndApproval,
     handleApproval,
+    handleRevoke,
     getReadContract,
     getWriteContract,
   };
