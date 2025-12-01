@@ -97,31 +97,31 @@ export const CustomMintingWorkflows = ({
       const userAddress = await signer.getAddress();
 
       // Step 1: Verify ownership of tokens to burn
-      toast.info("Verifying token ownership...");
+      toast.info("Verifying token balances...");
       for (const tokenId of recipe.burns) {
-        const owner = await contract.ownerOf(tokenId);
-        if (owner.toLowerCase() !== userAddress.toLowerCase()) {
+        const balance = await contract.balanceOf(userAddress, tokenId);
+        if (balance < 1) {
           throw new Error(`You don't own Token ${tokenId}`);
         }
       }
 
-      // Step 2: Burn tokens (transfer to 0x0 address)
+      // Step 2: Burn tokens
       toast.info(`Burning ${recipe.burns.length} token(s)...`);
-      const burnAddress = ethers.ZeroAddress;
       
       for (const tokenId of recipe.burns) {
-        const tx = await contract.transferFrom(userAddress, burnAddress, tokenId);
+        const tx = await contract.burn(userAddress, tokenId, 1);
         toast.info(`Burning Token ${tokenId}...`);
         await tx.wait();
       }
 
       // Step 3: Mint new token
-      // Note: Actual minting logic depends on contract implementation
-      // This is a placeholder - replace with actual mint function if available
+      toast.info(`Minting Token ${recipe.mints}...`);
+      const mintTx = await contract.mint(recipient, recipe.mints);
+      await mintTx.wait();
+
       toast.success(
-        `Tokens burned successfully! Token ${recipe.mints} should be minted to ${recipient}`
+        `Successfully burned tokens and minted Token ${recipe.mints} to ${recipient}!`
       );
-      toast.info("Note: Actual minting depends on contract implementation");
 
       // Clear the input
       setRecipientAddress((prev) => ({ ...prev, [recipe.id]: "" }));
@@ -137,7 +137,7 @@ export const CustomMintingWorkflows = ({
     <div className="space-y-6">
       {!isWalletConnected && (
         <BrutalCard>
-          <BrutalCardContent className="py-6">
+            <BrutalCardContent className="py-6">
             <div className="text-center">
               <p className="text-lg font-bold mb-2">Wallet Connection Required</p>
               <p className="text-muted-foreground">
