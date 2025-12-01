@@ -63,6 +63,14 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      borderWidth: {
+        thick: "var(--border-thick)",
+      },
+      boxShadow: {
+        brutal: "var(--shadow-brutal)",
+        "brutal-sm": "var(--shadow-brutal-sm)",
+        "brutal-lg": "var(--shadow-brutal-lg)",
+      },
       keyframes: {
         "accordion-down": {
           from: {
