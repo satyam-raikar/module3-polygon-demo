@@ -16,10 +16,10 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-black uppercase tracking-tight">
-                Web3 Dashboard
+                Module 3 Demo
               </h1>
               <p className="text-sm font-bold text-muted-foreground mt-1">
-                ERC721 CONTRACT INTERACTION
+                ERC1155 contract and Trade contract interaction
               </p>
             </div>
             <WalletConnect />
