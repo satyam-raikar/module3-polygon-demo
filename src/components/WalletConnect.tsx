@@ -3,14 +3,36 @@ import { useSDK } from "@metamask/sdk-react";
 import { BrutalButton } from "./ui/brutal-button";
 import { toast } from "sonner";
 import { POLYGON_MAINNET_CHAIN_ID } from "@/lib/contractABI";
+import { ethers } from "ethers";
 
 export const WalletConnect = () => {
   const { sdk, connected, connecting, account, chainId } = useSDK();
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
+  const [maticBalance, setMaticBalance] = useState<string>("0");
 
   useEffect(() => {
     setIsCorrectNetwork(chainId === POLYGON_MAINNET_CHAIN_ID);
   }, [chainId]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (connected && account && window.ethereum) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const balance = await provider.getBalance(account);
+          setMaticBalance(ethers.formatEther(balance));
+        } catch (error) {
+          console.error("Failed to fetch balance:", error);
+        }
+      }
+    };
+
+    fetchBalance();
+    
+    // Refresh balance every 10 seconds
+    const interval = setInterval(fetchBalance, 10000);
+    return () => clearInterval(interval);
+  }, [connected, account]);
 
   const connect = async () => {
     try {
@@ -86,12 +108,12 @@ export const WalletConnect = () => {
   if (connected && account) {
     return (
       <div className="flex items-center gap-3">
-        <div className="bg-card border-thick border-border px-4 py-2 shadow-brutal-sm">
+        <BrutalButton size="sm" variant="outline" className="flex flex-col items-start gap-1 h-auto py-2">
           <div className="text-xs font-bold uppercase text-muted-foreground">
-            {getNetworkName()}
+            {getNetworkName()} • {parseFloat(maticBalance).toFixed(4)} MATIC
           </div>
           <div className="text-sm font-bold">{formatAddress(account)}</div>
-        </div>
+        </BrutalButton>
         {!isCorrectNetwork && (
           <BrutalButton size="sm" variant="destructive" onClick={switchToPolygon}>
             Switch to Polygon
