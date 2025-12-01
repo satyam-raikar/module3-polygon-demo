@@ -35,16 +35,16 @@ const Index = () => {
 
   const { contractAddress: tradeContractAddress } = useTradeContract({
     onSuccess: () => {
-      loadBalancesAndApproval(tradeContractAddress);
+      loadBalancesAndApproval();
     },
   });
 
   // Load balances when wallet is connected
   useEffect(() => {
-    if (connected && isPolygonNetwork && tradeContractAddress) {
-      loadBalancesAndApproval(tradeContractAddress);
+    if (connected && isPolygonNetwork) {
+      loadBalancesAndApproval();
     }
-  }, [connected, isPolygonNetwork, tradeContractAddress]);
+  }, [connected, isPolygonNetwork]);
 
   return (
     <div className="min-h-screen bg-background">

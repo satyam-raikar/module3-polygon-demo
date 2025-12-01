@@ -109,39 +109,17 @@ export const CustomMintingWorkflows = ({
     forgeToken,
     burnToken,
     tradeToken,
-    contractAddress: tradeContractAddress,
   } = useTradeContract({
     onSuccess: () => {
-      loadBalancesAndApproval(tradeContractAddress);
+      loadBalancesAndApproval();
     },
   });
 
   useEffect(() => {
-    // Load cooldowns from localStorage
-    const loadedCooldowns: { [key: number]: number } = {};
-    TOKEN_INFO.forEach((token) => {
-      if (token.isMintable) {
-        const cooldownStr = localStorage.getItem(
-          `${COOLDOWN_KEY_PREFIX}${token.id}`
-        );
-        if (cooldownStr) {
-          const cooldownEnd = parseInt(cooldownStr);
-          if (cooldownEnd > Date.now()) {
-            loadedCooldowns[token.id] = cooldownEnd;
-          } else {
-            localStorage.removeItem(`${COOLDOWN_KEY_PREFIX}${token.id}`);
-          }
-        }
-      }
-    });
-    setCooldowns(loadedCooldowns);
-  }, []);
-
-  useEffect(() => {
     if (isWalletConnected) {
-      loadBalancesAndApproval(tradeContractAddress);
+      loadBalancesAndApproval();
     }
-  }, [isWalletConnected, tradeContractAddress]);
+  }, [isWalletConnected]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -213,7 +191,7 @@ export const CustomMintingWorkflows = ({
   };
 
   const handleApproval = async () => {
-    const result = await handleERC1155Approval(tradeContractAddress);
+    const result = await handleERC1155Approval();
     if (result.success) {
       toast.success("Contract approved! You can now forge, burn, and trade tokens.");
     } else {
@@ -222,7 +200,7 @@ export const CustomMintingWorkflows = ({
   };
 
   const handleRevoke = async () => {
-    const result = await handleERC1155Revoke(tradeContractAddress);
+    const result = await handleERC1155Revoke();
     if (result.success) {
       toast.success("Contract approval revoked successfully.");
     } else {
