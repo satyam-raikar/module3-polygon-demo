@@ -4,13 +4,14 @@ import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from
 import { BrutalButton } from "./ui/brutal-button";
 import { BrutalInput } from "./ui/brutal-input";
 import { toast } from "sonner";
-import { CONTRACT_ABI } from "@/lib/contractABI";
+import { CONTRACT_ABI, POLYGON_RPC_URL } from "@/lib/contractABI";
 
 interface ContractInteractionProps {
   contractAddress: string;
+  isWalletConnected: boolean;
 }
 
-export const ContractInteraction = ({ contractAddress }: ContractInteractionProps) => {
+export const ContractInteraction = ({ contractAddress, isWalletConnected }: ContractInteractionProps) => {
   const [loading, setLoading] = useState<string | null>(null);
   const [results, setResults] = useState<{ [key: string]: any }>({});
 
@@ -36,6 +37,13 @@ export const ContractInteraction = ({ contractAddress }: ContractInteractionProp
   const [safeTransferTokenId, setSafeTransferTokenId] = useState("");
 
   const getContract = (needsSigner = false) => {
+    // For read operations, use public RPC if wallet not connected
+    if (!needsSigner && !isWalletConnected) {
+      const provider = new ethers.JsonRpcProvider(POLYGON_RPC_URL);
+      return new ethers.Contract(contractAddress, CONTRACT_ABI, provider);
+    }
+    
+    // For wallet-connected operations
     if (!window.ethereum) {
       throw new Error("MetaMask not found");
     }
@@ -66,6 +74,11 @@ export const ContractInteraction = ({ contractAddress }: ContractInteractionProp
   };
 
   const handleWriteFunction = async (functionName: string, args: any[]) => {
+    if (!isWalletConnected) {
+      toast.error("Please connect your wallet to execute write functions");
+      return;
+    }
+    
     setLoading(functionName);
     try {
       const contract = await getContract(true);

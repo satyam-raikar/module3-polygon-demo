@@ -436,3 +436,6 @@ export const CONTRACT_ABI = [
 
 export const POLYGON_MAINNET_CHAIN_ID = "0x89"; // 137 in decimal
 export const ETH_MAINNET_CHAIN_ID = "0x1"; // 1 in decimal
+
+export const CONTRACT_ADDRESS = "0x66AC3F229f38D028157A804bc920F167584AfA25";
+export const POLYGON_RPC_URL = "https://polygon-rpc.com/";
