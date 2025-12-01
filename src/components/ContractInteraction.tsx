@@ -37,23 +37,20 @@ export const ContractInteraction = ({
   const [transferAmount, setTransferAmount] = useState("");
 
   const getContract = (needsSigner = false) => {
-    if (!needsSigner && !isWalletConnected) {
+    // Always use public RPC for read operations (view functions)
+    if (!needsSigner) {
       const provider = new ethers.JsonRpcProvider(POLYGON_RPC_URL);
       return new ethers.Contract(contractAddress, CONTRACT_ABI, provider);
     }
 
+    // For write operations, use wallet provider
     if (!window.ethereum) {
       throw new Error("MetaMask not found");
     }
     const provider = new ethers.BrowserProvider(window.ethereum);
-
-    if (needsSigner) {
-      return provider.getSigner().then((signer) =>
-        new ethers.Contract(contractAddress, CONTRACT_ABI, signer)
-      );
-    }
-
-    return new ethers.Contract(contractAddress, CONTRACT_ABI, provider);
+    return provider.getSigner().then((signer) =>
+      new ethers.Contract(contractAddress, CONTRACT_ABI, signer)
+    );
   };
 
   const handleViewFunction = async (functionName: string, args: any[] = []) => {
