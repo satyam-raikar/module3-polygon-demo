@@ -673,16 +673,7 @@ export const CustomMintingWorkflows = ({
                           </BrutalCardTitle>
                         </BrutalCardHeader>
                         <BrutalCardContent className="space-y-3">
-                          {!isApproved ? (
-                            <BrutalButton
-                              onClick={handleApproval}
-                              disabled={checkingApproval}
-                              className="w-full"
-                              variant="outline"
-                            >
-                              {checkingApproval ? "Approving..." : "Approval Required"}
-                            </BrutalButton>
-                          ) : balance > 0 ? (
+                          {balance > 0 ? (
                             <>
                               {selectedTradeToken === tokenId ? (
                                 <div className="space-y-2">
@@ -693,7 +684,7 @@ export const CustomMintingWorkflows = ({
                                     <BrutalButton
                                       key={receiveId}
                                       onClick={() => handleTrade(tokenId, receiveId)}
-                                      disabled={tradeLoading === tokenId}
+                                      disabled={!isApproved || tradeLoading === tokenId}
                                       className="w-full"
                                       size="sm"
                                     >
@@ -712,6 +703,7 @@ export const CustomMintingWorkflows = ({
                               ) : (
                                 <BrutalButton
                                   onClick={() => setSelectedTradeToken(tokenId)}
+                                  disabled={!isApproved}
                                   className="w-full"
                                   variant="secondary"
                                 >
