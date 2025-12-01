@@ -1,6 +1,7 @@
 import { useSDK } from "@metamask/sdk-react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { ContractInteraction } from "@/components/ContractInteraction";
+import { CollectionOverview } from "@/components/CollectionOverview";
 import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from "@/components/ui/brutal-card";
 import { POLYGON_MAINNET_CHAIN_ID, CONTRACT_ADDRESS } from "@/lib/contractABI";
 
@@ -30,6 +31,12 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-6">
+          {/* Collection Overview */}
+          <CollectionOverview 
+            contractAddress={CONTRACT_ADDRESS} 
+            isWalletConnected={connected && isPolygonNetwork}
+          />
+
           {/* Contract Info Card */}
           <BrutalCard>
             <BrutalCardHeader>
