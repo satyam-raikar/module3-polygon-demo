@@ -108,18 +108,18 @@ export const WalletConnect = () => {
   if (connected && account) {
     return (
       <div className="flex items-center gap-3">
-        <BrutalButton size="sm" variant="outline" className="flex flex-col items-start gap-1 h-auto py-2">
-          <div className="text-xs font-bold uppercase text-muted-foreground">
-            {getNetworkName()} • {parseFloat(maticBalance).toFixed(4)} MATIC
-          </div>
-          <div className="text-sm font-bold">{formatAddress(account)}</div>
+        <BrutalButton size="sm" variant="outline" disabled className="cursor-default">
+          {getNetworkName()} • {parseFloat(maticBalance).toFixed(4)} MATIC
+        </BrutalButton>
+        <BrutalButton size="sm" variant="outline" disabled className="cursor-default">
+          {formatAddress(account)}
         </BrutalButton>
         {!isCorrectNetwork && (
           <BrutalButton size="sm" variant="destructive" onClick={switchToPolygon}>
             Switch to Polygon
           </BrutalButton>
         )}
-        <BrutalButton size="sm" variant="outline" onClick={disconnect} className="h-auto py-3">
+        <BrutalButton size="sm" variant="outline" onClick={disconnect}>
           Disconnect
         </BrutalButton>
       </div>
