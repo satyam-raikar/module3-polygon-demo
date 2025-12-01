@@ -36,9 +36,9 @@ const Index = () => {
               <BrutalCardTitle>Contract Address</BrutalCardTitle>
             </BrutalCardHeader>
             <BrutalCardContent>
-              <div className="p-4 bg-muted border-2 border-border">
+                <div className="p-4 bg-muted border-2 border-border">
                 <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
-                  ERC721 Contract on Polygon Mainnet
+                  ERC1155 Contract on Polygon Mainnet
                 </div>
                 <div className="font-mono text-sm break-all">{CONTRACT_ADDRESS}</div>
               </div>
