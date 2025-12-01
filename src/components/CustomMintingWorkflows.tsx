@@ -454,9 +454,9 @@ export const CustomMintingWorkflows = ({
           </div>
         )}
 
-        {isWalletConnected && isApproved && (
+        {isWalletConnected && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             {TOKEN_INFO.filter((t) => !t.isMintable).map((token) => {
               const recipe = BURN_RECIPES[token.id];
               const canMint = canMintBurnToken(token.id);
@@ -522,21 +522,23 @@ export const CustomMintingWorkflows = ({
                           : "Forge"}
                       </BrutalButton>
 
-                      {isApproved && balances[token.id] > 0 && (
+                      {balances[token.id] > 0 && (
                         <BrutalButton
                           onClick={() => handleBurn(token.id)}
-                          disabled={tradeLoading === token.id}
+                          disabled={tradeLoading === token.id || !isApproved}
                           className="w-full"
                           variant="destructive"
                         >
-                          {tradeLoading === token.id ? "Burning..." : "Burn (Get Nothing)"}
+                          {tradeLoading === token.id ? "Burning..." : !isApproved ? "Approval Required" : "Burn (Get Nothing)"}
                         </BrutalButton>
                       )}
                     </div>
 
-                    {isApproved && !canMint && (
+                    {!canMint && (
                       <div className="text-xs text-muted-foreground bg-background border-2 border-border p-2">
-                        You need to mint the required tokens first before you can forge this token.
+                        {isApproved 
+                          ? "You need to mint the required tokens first before you can forge this token."
+                          : "Approve the contract and obtain the required tokens to forge."}
                       </div>
                     )}
                   </BrutalCardContent>
