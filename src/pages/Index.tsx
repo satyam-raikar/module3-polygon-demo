@@ -73,7 +73,7 @@ const Index = () => {
       <footer className="border-t-thick border-border bg-card mt-12 py-6">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm font-bold text-muted-foreground uppercase">
-            Neo-Brutalist Web3 Dashboard
+            :)
           </p>
         </div>
       </footer>
