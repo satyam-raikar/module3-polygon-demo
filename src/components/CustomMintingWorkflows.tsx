@@ -453,63 +453,87 @@ export const CustomMintingWorkflows = ({
           </BrutalCard>
         )}
 
-        {isWalletConnected && !isApproved && (
-          <BrutalCard>
-            <BrutalCardContent className="py-6">
-              <div className="space-y-4">
-                <div className="text-center mb-4">
-                  <p className="text-lg font-bold mb-2">Approval Required</p>
-                  <p className="text-muted-foreground mb-4">
-                    You need to approve the contract first to forge, burn, and trade tokens
-                  </p>
-                </div>
-
-                <div className="bg-muted border-2 border-border p-4">
-                  <p className="font-bold mb-2">How Approval Works:</p>
-                  <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside">
-                    <li>Click "Approve Contract" below</li>
-                    <li>Confirm the transaction in MetaMask</li>
-                    <li>Wait for transaction confirmation</li>
-                    <li>Start forging, burning, and trading!</li>
-                  </ol>
-                </div>
-
-                <BrutalButton
-                  onClick={handleApproval}
-                  disabled={checkingApproval}
-                  className="w-full"
-                  size="lg"
-                >
-                  {checkingApproval ? "Approving..." : "Approve Contract"}
-                </BrutalButton>
-              </div>
-            </BrutalCardContent>
-          </BrutalCard>
-        )}
-
-        {isWalletConnected && isApproved && (
-          <>
+        {isWalletConnected && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Approve Contract Card */}
             <BrutalCard>
               <BrutalCardContent className="py-6">
                 <div className="space-y-4">
                   <div className="text-center mb-4">
-                    <p className="text-lg font-bold mb-2 text-primary">✓ Contract Approved</p>
+                    <p className="text-lg font-bold mb-2">
+                      {isApproved ? "✓ Contract Approved" : "Approval Required"}
+                    </p>
                     <p className="text-muted-foreground">
-                      You can now forge, burn, and trade tokens
+                      {isApproved 
+                        ? "Contract is currently approved for trading" 
+                        : "Approve the contract to forge, burn, and trade tokens"}
                     </p>
                   </div>
 
+                  {!isApproved && (
+                    <div className="bg-muted border-2 border-border p-4">
+                      <p className="font-bold mb-2">How Approval Works:</p>
+                      <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside">
+                        <li>Click "Approve Contract" below</li>
+                        <li>Confirm the transaction in MetaMask</li>
+                        <li>Wait for transaction confirmation</li>
+                        <li>Start forging, burning, and trading!</li>
+                      </ol>
+                    </div>
+                  )}
+
                   <BrutalButton
-                    onClick={handleRevoke}
-                    disabled={checkingApproval}
+                    onClick={handleApproval}
+                    disabled={checkingApproval || isApproved}
                     className="w-full"
-                    variant="destructive"
+                    size="lg"
                   >
-                    {checkingApproval ? "Revoking..." : "Revoke Approval"}
+                    {checkingApproval ? "Approving..." : isApproved ? "Already Approved" : "Approve Contract"}
                   </BrutalButton>
                 </div>
               </BrutalCardContent>
             </BrutalCard>
+
+            {/* Revoke Approval Card */}
+            <BrutalCard>
+              <BrutalCardContent className="py-6">
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <p className="text-lg font-bold mb-2">Revoke Approval</p>
+                    <p className="text-muted-foreground">
+                      {isApproved 
+                        ? "Remove contract permissions to prevent token operations" 
+                        : "Approval must be granted before it can be revoked"}
+                    </p>
+                  </div>
+
+                  <div className="bg-muted border-2 border-border p-4">
+                    <p className="font-bold mb-2">What Revoking Does:</p>
+                    <ul className="text-sm space-y-1 text-muted-foreground">
+                      <li>• Removes contract's permission to move your tokens</li>
+                      <li>• Prevents forging, burning, and trading operations</li>
+                      <li>• Can be re-approved at any time</li>
+                      <li>• Increases security when not actively trading</li>
+                    </ul>
+                  </div>
+
+                  <BrutalButton
+                    onClick={handleRevoke}
+                    disabled={checkingApproval || !isApproved}
+                    className="w-full"
+                    variant="destructive"
+                    size="lg"
+                  >
+                    {checkingApproval ? "Revoking..." : !isApproved ? "Not Approved Yet" : "Revoke Approval"}
+                  </BrutalButton>
+                </div>
+              </BrutalCardContent>
+            </BrutalCard>
+          </div>
+        )}
+
+        {isWalletConnected && isApproved && (
+          <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TOKEN_INFO.filter((t) => !t.isMintable).map((token) => {
               const recipe = BURN_RECIPES[token.id];
