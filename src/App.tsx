@@ -18,7 +18,6 @@ const App = () => (
           name: "Web3 Contract Dashboard",
           url: window.location.href,
         },
-        infuraAPIKey: process.env.INFURA_API_KEY,
       }}
     >
       <TooltipProvider>
