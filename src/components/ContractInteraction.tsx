@@ -3,8 +3,10 @@ import { ethers } from "ethers";
 import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from "./ui/brutal-card";
 import { BrutalButton } from "./ui/brutal-button";
 import { BrutalInput } from "./ui/brutal-input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { toast } from "sonner";
 import { CONTRACT_ABI, POLYGON_RPC_URL } from "@/lib/contractABI";
+import { CustomMintingWorkflows } from "./CustomMintingWorkflows";
 
 interface ContractInteractionProps {
   contractAddress: string;
@@ -95,49 +97,65 @@ export const ContractInteraction = ({ contractAddress, isWalletConnected }: Cont
   };
 
   return (
-    <div className="space-y-6">
-      {/* Contract Info */}
-      <BrutalCard>
-        <BrutalCardHeader>
-          <BrutalCardTitle>Contract Information</BrutalCardTitle>
-        </BrutalCardHeader>
-        <BrutalCardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <BrutalButton
-                onClick={() => handleViewFunction("name")}
-                disabled={loading === "name"}
-                size="sm"
-                variant="secondary"
-                className="w-full"
-              >
-                {loading === "name" ? "Loading..." : "Get Name"}
-              </BrutalButton>
-              {results.name && (
-                <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-sm">
-                  {results.name}
-                </div>
-              )}
+    <Tabs defaultValue="default" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 border-thick border-border shadow-brutal h-auto">
+        <TabsTrigger 
+          value="default" 
+          className="font-bold uppercase text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border-r-thick border-border"
+        >
+          Contract Functions
+        </TabsTrigger>
+        <TabsTrigger 
+          value="custom" 
+          className="font-bold uppercase text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+        >
+          Minting Workflows
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="default" className="space-y-6 mt-6">
+        {/* Contract Info */}
+        <BrutalCard>
+          <BrutalCardHeader>
+            <BrutalCardTitle>Contract Information</BrutalCardTitle>
+          </BrutalCardHeader>
+          <BrutalCardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <BrutalButton
+                  onClick={() => handleViewFunction("name")}
+                  disabled={loading === "name"}
+                  size="sm"
+                  variant="secondary"
+                  className="w-full"
+                >
+                  {loading === "name" ? "Loading..." : "Get Name"}
+                </BrutalButton>
+                {results.name && (
+                  <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-sm">
+                    {results.name}
+                  </div>
+                )}
+              </div>
+              <div>
+                <BrutalButton
+                  onClick={() => handleViewFunction("symbol")}
+                  disabled={loading === "symbol"}
+                  size="sm"
+                  variant="secondary"
+                  className="w-full"
+                >
+                  {loading === "symbol" ? "Loading..." : "Get Symbol"}
+                </BrutalButton>
+                {results.symbol && (
+                  <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-sm">
+                    {results.symbol}
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <BrutalButton
-                onClick={() => handleViewFunction("symbol")}
-                disabled={loading === "symbol"}
-                size="sm"
-                variant="secondary"
-                className="w-full"
-              >
-                {loading === "symbol" ? "Loading..." : "Get Symbol"}
-              </BrutalButton>
-              {results.symbol && (
-                <div className="mt-2 p-3 bg-muted border-2 border-border font-mono text-sm">
-                  {results.symbol}
-                </div>
-              )}
-            </div>
-          </div>
-        </BrutalCardContent>
-      </BrutalCard>
+          </BrutalCardContent>
+        </BrutalCard>
 
       {/* View Functions */}
       <BrutalCard>
@@ -423,6 +441,14 @@ export const ContractInteraction = ({ contractAddress, isWalletConnected }: Cont
           </div>
         </BrutalCardContent>
       </BrutalCard>
-    </div>
+      </TabsContent>
+
+      <TabsContent value="custom" className="space-y-6 mt-6">
+        <CustomMintingWorkflows 
+          contractAddress={contractAddress}
+          isWalletConnected={isWalletConnected}
+        />
+      </TabsContent>
+    </Tabs>
   );
 };
