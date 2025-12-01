@@ -1,4 +1,5 @@
 import { useSDK } from "@metamask/sdk-react";
+import { useEffect } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { ContractInteraction } from "@/components/ContractInteraction";
 import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from "@/components/ui/brutal-card";
@@ -37,6 +38,13 @@ const Index = () => {
       loadBalancesAndApproval(tradeContractAddress);
     },
   });
+
+  // Load balances when wallet is connected
+  useEffect(() => {
+    if (connected && isPolygonNetwork && tradeContractAddress) {
+      loadBalancesAndApproval(tradeContractAddress);
+    }
+  }, [connected, isPolygonNetwork, tradeContractAddress]);
 
   return (
     <div className="min-h-screen bg-background">
