@@ -113,13 +113,13 @@ export const ContractInteraction = ({
           value="default"
           className="font-bold uppercase text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border-r-thick border-border"
         >
-          Contract Functions
+          1155 Contract Functions
         </TabsTrigger>
         <TabsTrigger
           value="custom"
           className="font-bold uppercase text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
-          Minting Workflows
+          Trade Contract
         </TabsTrigger>
       </TabsList>
 
