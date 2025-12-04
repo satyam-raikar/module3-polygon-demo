@@ -150,6 +150,9 @@ export const CustomMintingWorkflows = ({
     [key: number]: number;
   }>({});
   const [selectedTradeToken, setSelectedTradeToken] = useState<number | null>(null);
+  const [exchangeRates, setExchangeRates] = useState<{
+    [key: string]: number;
+  }>({});
   const [cooldownEnd, setCooldownEnd] = useState<number | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const {
@@ -169,7 +172,8 @@ export const CustomMintingWorkflows = ({
     forgeToken,
     burnToken,
     tradeToken,
-    getLastMintTimestamp
+    getLastMintTimestamp,
+    getExchangeRate
   } = useTradeContract({
     onSuccess: () => {
       loadBalancesAndApproval();
@@ -553,18 +557,41 @@ export const CustomMintingWorkflows = ({
                       [tokenId]: Math.max(1, Math.min(balance, parseInt(e.target.value) || 1))
                     }))} className="w-full" />
                               <div className="text-xs font-bold uppercase text-muted-foreground">Receive:</div>
-                              {[0, 1, 2].filter(receiveId => receiveId !== tokenId).map(receiveId => <BrutalButton key={receiveId} onClick={() => handleTrade(tokenId, receiveId)} disabled={!isApproved || tradeLoading === `trade-${tokenId}`} className="w-full" size="sm">
-                                  {tradeLoading === `trade-${tokenId}` ? "Trading..." : `Token ${receiveId}`}
-                                </BrutalButton>)}
+                              {[0, 1, 2].filter(receiveId => receiveId !== tokenId).map(receiveId => {
+                                const rate = exchangeRates[`${tokenId}-${receiveId}`];
+                                const amount = tradeAmounts[tokenId] || 1;
+                                const receiveAmount = rate ? amount * rate : null;
+                                return (
+                                  <BrutalButton 
+                                    key={receiveId} 
+                                    onClick={() => handleTrade(tokenId, receiveId)} 
+                                    disabled={!isApproved || tradeLoading === `trade-${tokenId}`} 
+                                    className="w-full flex justify-between items-center" 
+                                    size="sm"
+                                  >
+                                    <span>{tradeLoading === `trade-${tokenId}` ? "Trading..." : `Token ${receiveId}`}</span>
+                                    {receiveAmount !== null && (
+                                      <span className="text-xs opacity-75">→ {receiveAmount}x</span>
+                                    )}
+                                  </BrutalButton>
+                                );
+                              })}
                               <BrutalButton onClick={() => setSelectedTradeToken(null)} variant="outline" className="w-full" size="sm">
                                 Cancel
                               </BrutalButton>
-                            </div> : <BrutalButton onClick={() => {
+                            </div> : <BrutalButton onClick={async () => {
                     setSelectedTradeToken(tokenId);
                     setTradeAmounts(prev => ({
                       ...prev,
                       [tokenId]: 1
                     }));
+                    // Fetch exchange rates
+                    const rates: { [key: string]: number } = {};
+                    for (const receiveId of [0, 1, 2].filter(id => id !== tokenId)) {
+                      const rate = await getExchangeRate(tokenId, receiveId);
+                      rates[`${tokenId}-${receiveId}`] = rate;
+                    }
+                    setExchangeRates(prev => ({ ...prev, ...rates }));
                   }} disabled={!isApproved} className="w-full" variant="secondary">
                               {!isApproved ? "Approve First" : "Trade"}
                             </BrutalButton> : <div className="text-center text-sm text-muted-foreground p-2 bg-muted border-2 border-border">No tokens</div>}
