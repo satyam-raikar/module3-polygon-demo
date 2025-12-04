@@ -127,4 +127,4 @@ export const TRADE_CONTRACT_ABI = [
 ] as const;
 
 // Trade contract address on Polygon mainnet
-export const TRADE_CONTRACT_ADDRESS = "0xB02117Bfee1680Be864911c6D7cee3D9116870a9";
+export const TRADE_CONTRACT_ADDRESS = "0x702813a4034Eb1f881EeCfC299bD4f9088d5c025";
