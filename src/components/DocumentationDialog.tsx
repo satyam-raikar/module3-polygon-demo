@@ -97,7 +97,7 @@ export const DocumentationDialog = () => {
 
             {/* MINTING Section */}
             <section>
-              <h3 className="text-xl font-bold uppercase mb-3 bg-accent px-3 py-1 inline-block">
+              <h3 className="text-xl font-bold uppercase mb-3 bg-secondary px-3 py-1 inline-block">
                 1. Minting Base Tokens
               </h3>
               <div className="space-y-4 text-sm">
