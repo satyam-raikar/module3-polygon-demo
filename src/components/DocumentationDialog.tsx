@@ -160,7 +160,7 @@ export const DocumentationDialog = () => {
 
             {/* FORGING Section */}
             <section>
-              <h3 className="text-xl font-bold uppercase mb-3 bg-primary text-primary-foreground px-3 py-1 inline-block">
+              <h3 className="text-xl font-bold uppercase mb-3 bg-secondary px-3 py-1 inline-block">
                 2. Forging (Burn-to-Mint)
               </h3>
               <div className="space-y-4 text-sm">
@@ -271,7 +271,7 @@ export const DocumentationDialog = () => {
 
             {/* BURNING Section */}
             <section>
-              <h3 className="text-xl font-bold uppercase mb-3 bg-secondary text-destructive-foreground px-3 py-1 inline-block">
+              <h3 className="text-xl font-bold uppercase mb-3 bg-secondary px-3 py-1 inline-block">
                 3. Burning Tokens
               </h3>
               <div className="space-y-4 text-sm">
