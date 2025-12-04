@@ -65,7 +65,7 @@ export const CustomMintingWorkflows = ({
     forgeToken,
     burnToken,
     tradeToken,
-    canMintBase,
+    getLastMintTimestamp,
   } = useTradeContract({
     onSuccess: () => {
       loadBalancesAndApproval();
@@ -78,9 +78,14 @@ export const CustomMintingWorkflows = ({
     try {
       const accounts = await window.ethereum.request({ method: "eth_accounts" });
       if (accounts && accounts.length > 0) {
-        const canMint = await canMintBase(accounts[0]);
-        if (!canMint) {
-          setCooldownEnd(Date.now() + 60000);
+        const lastMintTimestamp = await getLastMintTimestamp(accounts[0]);
+        if (lastMintTimestamp > 0) {
+          const cooldownEndTime = (lastMintTimestamp + 60) * 1000; // Convert to milliseconds
+          if (cooldownEndTime > Date.now()) {
+            setCooldownEnd(cooldownEndTime);
+          } else {
+            setCooldownEnd(null);
+          }
         } else {
           setCooldownEnd(null);
         }
@@ -125,7 +130,7 @@ export const CustomMintingWorkflows = ({
     const result = await mintToken(tokenId, amount);
     if (result.success) {
       toast.success(`Successfully minted ${amount}x Token ${tokenId}!`);
-      setCooldownEnd(Date.now() + 60000);
+      // Cooldown will be refreshed via onSuccess callback
     } else {
       toast.error(`Failed to mint: ${result.error}`);
     }
