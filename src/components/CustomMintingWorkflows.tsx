@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from "./ui/brutal-card";
 import { BrutalButton } from "./ui/brutal-button";
 import { BrutalInput } from "./ui/brutal-input";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { toast } from "sonner";
-import { Code, FileText } from "lucide-react";
+import { Code, ChevronDown } from "lucide-react";
 import { useERC1155Contract } from "@/hooks/useERC1155Contract";
 import { useTradeContract } from "@/hooks/useTradeContract";
 import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
@@ -273,32 +274,42 @@ export const CustomMintingWorkflows = ({
 
   return (
     <div className="space-y-8">
-      {/* Contract Functions Reference */}
-      <div>
-        <h3 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
-          <Code className="w-5 h-5" />
-          <span className="bg-muted text-muted-foreground px-3 py-1">Trade Contract Functions</span>
-          <span className="text-xs font-mono text-muted-foreground">{TRADE_CONTRACT_ADDRESS.slice(0, 10)}...</span>
-        </h3>
-        <BrutalCard>
-          <BrutalCardContent className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {CONTRACT_FUNCTIONS.map((fn) => (
-                <div key={fn.name} className="border-2 border-border p-3 bg-background">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-xs font-bold uppercase px-2 py-0.5 ${fn.type === 'write' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
-                      {fn.type}
-                    </span>
-                    <span className="font-mono font-bold text-sm">{fn.name}</span>
+      {/* Contract Functions Reference - Collapsible */}
+      <Collapsible>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold uppercase flex items-center gap-2">
+            <Code className="w-5 h-5" />
+            <span className="bg-muted text-muted-foreground px-3 py-1">Trade Contract Functions</span>
+            <span className="text-xs font-mono text-muted-foreground">{TRADE_CONTRACT_ADDRESS.slice(0, 10)}...</span>
+          </h3>
+          <CollapsibleTrigger asChild>
+            <BrutalButton variant="outline" size="sm" className="gap-2">
+              <span>Show Functions</span>
+              <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+            </BrutalButton>
+          </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent className="mt-4">
+          <BrutalCard>
+            <BrutalCardContent className="py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {CONTRACT_FUNCTIONS.map((fn) => (
+                  <div key={fn.name} className="border-2 border-border p-3 bg-background">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-xs font-bold uppercase px-2 py-0.5 ${fn.type === 'write' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                        {fn.type}
+                      </span>
+                      <span className="font-mono font-bold text-sm">{fn.name}</span>
+                    </div>
+                    <div className="font-mono text-xs text-muted-foreground mb-2 break-all">{fn.signature}</div>
+                    <p className="text-xs text-muted-foreground">{fn.description}</p>
                   </div>
-                  <div className="font-mono text-xs text-muted-foreground mb-2 break-all">{fn.signature}</div>
-                  <p className="text-xs text-muted-foreground">{fn.description}</p>
-                </div>
-              ))}
-            </div>
-          </BrutalCardContent>
-        </BrutalCard>
-      </div>
+                ))}
+              </div>
+            </BrutalCardContent>
+          </BrutalCard>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Free Mint Tokens 0-2 */}
       <div>
