@@ -4,10 +4,8 @@ import { ScrollArea } from "./ui/scroll-area";
 import { BookOpen } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/contractABI";
 import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
-
 export const DocumentationDialog = () => {
-  return (
-    <Dialog>
+  return <Dialog>
       <DialogTrigger asChild>
         <BrutalButton variant="outline" size="sm" className="gap-2">
           <BookOpen className="w-4 h-4" />
@@ -449,16 +447,12 @@ export const DocumentationDialog = () => {
                     <div className="font-bold text-foreground">Currency</div>
                     <div>MATIC (for gas)</div>
                   </div>
-                  <div className="bg-muted p-3 border-2 border-border">
-                    <div className="font-bold text-foreground">RPC</div>
-                    <div className="text-xs">polygon-rpc.com</div>
-                  </div>
+                  
                 </div>
               </div>
             </section>
           </div>
         </ScrollArea>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
