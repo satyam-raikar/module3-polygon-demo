@@ -11,12 +11,20 @@ import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
 
 const POLYGONSCAN_URL = "https://polygonscan.com/tx/";
 
-const showTxToast = (message: string, txHash?: string, isError = false) => {
-  if (isError) {
+const showTxToast = (message: string, txHash?: string, type: 'success' | 'error' | 'loading' = 'success') => {
+  if (type === 'error') {
     toast.error(message);
     return;
   }
   
+  if (type === 'loading') {
+    toast.loading(message, {
+      description: "Please wait for confirmation...",
+    });
+    return;
+  }
+  
+  toast.dismiss();
   toast.success(message, {
     description: txHash ? `TX: ${txHash.slice(0, 10)}...${txHash.slice(-8)}` : undefined,
     action: txHash ? {
@@ -234,11 +242,12 @@ export const CustomMintingWorkflows = ({
       return;
     }
     const amount = mintAmounts[tokenId] || 1;
+    showTxToast("Transaction in progress...", undefined, 'loading');
     const result = await mintToken(tokenId, amount);
     if (result.success) {
       showTxToast(`Successfully minted ${amount}x Token ${tokenId}!`, result.txHash);
     } else {
-      showTxToast(`Failed to mint: ${result.error}`, undefined, true);
+      showTxToast(`Failed to mint: ${result.error}`, undefined, 'error');
     }
   };
   const handleApproval = async () => {
@@ -275,11 +284,12 @@ export const CustomMintingWorkflows = ({
       toast.error("Insufficient tokens to forge");
       return;
     }
+    showTxToast("Transaction in progress...", undefined, 'loading');
     const result = await forgeToken(tokenId);
     if (result.success) {
       showTxToast(`Successfully forged Token ${tokenId}!`, result.txHash);
     } else {
-      showTxToast(`Failed to forge: ${result.error}`, undefined, true);
+      showTxToast(`Failed to forge: ${result.error}`, undefined, 'error');
     }
   };
   const handleBurnTop = async (tokenId: number) => {
@@ -296,11 +306,12 @@ export const CustomMintingWorkflows = ({
       toast.error("Insufficient balance to burn");
       return;
     }
+    showTxToast("Transaction in progress...", undefined, 'loading');
     const result = await burnToken(tokenId, amount);
     if (result.success) {
       showTxToast(`Burned ${amount}x Token ${tokenId}!`, result.txHash);
     } else {
-      showTxToast(`Failed to burn: ${result.error}`, undefined, true);
+      showTxToast(`Failed to burn: ${result.error}`, undefined, 'error');
     }
   };
   const handleTrade = async (giveId: number, receiveId: number) => {
@@ -313,12 +324,13 @@ export const CustomMintingWorkflows = ({
       return;
     }
     const amount = tradeAmounts[giveId] || 1;
+    showTxToast("Transaction in progress...", undefined, 'loading');
     const result = await tradeToken(giveId, amount, receiveId);
     if (result.success) {
       showTxToast(`Traded ${amount}x Token ${giveId} for Token ${receiveId}!`, result.txHash);
       setSelectedTradeToken(null);
     } else {
-      showTxToast(`Failed to trade: ${result.error}`, undefined, true);
+      showTxToast(`Failed to trade: ${result.error}`, undefined, 'error');
     }
   };
   const isCooldownActive = cooldownEnd !== null && timeRemaining > 0;
