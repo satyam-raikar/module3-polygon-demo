@@ -67,7 +67,7 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
       await tx.wait();
 
       onSuccess?.();
-      return { success: true };
+      return { success: true, txHash: tx.hash };
     } catch (error: any) {
       console.error("Error minting token:", error);
       return { success: false, error: error.message };
@@ -86,7 +86,7 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
       await tx.wait();
 
       onSuccess?.();
-      return { success: true };
+      return { success: true, txHash: tx.hash };
     } catch (error: any) {
       console.error("Error forging token:", error);
       return { success: false, error: error.message };
@@ -105,7 +105,7 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
       await tx.wait();
 
       onSuccess?.();
-      return { success: true };
+      return { success: true, txHash: tx.hash };
     } catch (error: any) {
       console.error("Error burning token:", error);
       return { success: false, error: error.message };
@@ -128,7 +128,7 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
       await tx.wait();
 
       onSuccess?.();
-      return { success: true };
+      return { success: true, txHash: tx.hash };
     } catch (error: any) {
       console.error("Error trading token:", error);
       return { success: false, error: error.message };

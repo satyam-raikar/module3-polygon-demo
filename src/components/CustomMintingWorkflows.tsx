@@ -4,10 +4,28 @@ import { BrutalButton } from "./ui/brutal-button";
 import { BrutalInput } from "./ui/brutal-input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { toast } from "sonner";
-import { Code, ChevronDown } from "lucide-react";
+import { Code, ChevronDown, ExternalLink } from "lucide-react";
 import { useERC1155Contract } from "@/hooks/useERC1155Contract";
 import { useTradeContract } from "@/hooks/useTradeContract";
 import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
+
+const POLYGONSCAN_URL = "https://polygonscan.com/tx/";
+
+const showTxToast = (message: string, txHash?: string, isError = false) => {
+  if (isError) {
+    toast.error(message);
+    return;
+  }
+  
+  toast.success(message, {
+    description: txHash ? `TX: ${txHash.slice(0, 10)}...${txHash.slice(-8)}` : undefined,
+    action: txHash ? {
+      label: "View TX",
+      onClick: () => window.open(`${POLYGONSCAN_URL}${txHash}`, "_blank"),
+    } : undefined,
+    duration: 5000,
+  });
+};
 const CONTRACT_FUNCTIONS = [{
   name: "mintBase",
   signature: "mintBase(uint256 id, uint256 amount)",
@@ -214,10 +232,9 @@ export const CustomMintingWorkflows = ({
     const amount = mintAmounts[tokenId] || 1;
     const result = await mintToken(tokenId, amount);
     if (result.success) {
-      toast.success(`Successfully minted ${amount}x Token ${tokenId}!`);
-      // Cooldown will be refreshed via onSuccess callback
+      showTxToast(`Successfully minted ${amount}x Token ${tokenId}!`, result.txHash);
     } else {
-      toast.error(`Failed to mint: ${result.error}`);
+      showTxToast(`Failed to mint: ${result.error}`, undefined, true);
     }
   };
   const handleApproval = async () => {
@@ -256,9 +273,9 @@ export const CustomMintingWorkflows = ({
     }
     const result = await forgeToken(tokenId);
     if (result.success) {
-      toast.success(`Successfully forged Token ${tokenId}!`);
+      showTxToast(`Successfully forged Token ${tokenId}!`, result.txHash);
     } else {
-      toast.error(`Failed to forge: ${result.error}`);
+      showTxToast(`Failed to forge: ${result.error}`, undefined, true);
     }
   };
   const handleBurnTop = async (tokenId: number) => {
@@ -277,9 +294,9 @@ export const CustomMintingWorkflows = ({
     }
     const result = await burnToken(tokenId, amount);
     if (result.success) {
-      toast.success(`Burned ${amount}x Token ${tokenId}!`);
+      showTxToast(`Burned ${amount}x Token ${tokenId}!`, result.txHash);
     } else {
-      toast.error(`Failed to burn: ${result.error}`);
+      showTxToast(`Failed to burn: ${result.error}`, undefined, true);
     }
   };
   const handleTrade = async (giveId: number, receiveId: number) => {
@@ -294,10 +311,10 @@ export const CustomMintingWorkflows = ({
     const amount = tradeAmounts[giveId] || 1;
     const result = await tradeToken(giveId, amount, receiveId);
     if (result.success) {
-      toast.success(`Traded ${amount}x Token ${giveId} for Token ${receiveId}!`);
+      showTxToast(`Traded ${amount}x Token ${giveId} for Token ${receiveId}!`, result.txHash);
       setSelectedTradeToken(null);
     } else {
-      toast.error(`Failed to trade: ${result.error}`);
+      showTxToast(`Failed to trade: ${result.error}`, undefined, true);
     }
   };
   const isCooldownActive = cooldownEnd !== null && timeRemaining > 0;
@@ -536,7 +553,7 @@ export const CustomMintingWorkflows = ({
                       [tokenId]: Math.max(1, Math.min(balance, parseInt(e.target.value) || 1))
                     }))} className="w-full" />
                               <div className="text-xs font-bold uppercase text-muted-foreground">Receive:</div>
-                              {[0, 1, 2].map(receiveId => <BrutalButton key={receiveId} onClick={() => handleTrade(tokenId, receiveId)} disabled={!isApproved || tradeLoading === `trade-${tokenId}`} className="w-full" size="sm">
+                              {[0, 1, 2].filter(receiveId => receiveId !== tokenId).map(receiveId => <BrutalButton key={receiveId} onClick={() => handleTrade(tokenId, receiveId)} disabled={!isApproved || tradeLoading === `trade-${tokenId}`} className="w-full" size="sm">
                                   {tradeLoading === `trade-${tokenId}` ? "Trading..." : `Token ${receiveId}`}
                                 </BrutalButton>)}
                               <BrutalButton onClick={() => setSelectedTradeToken(null)} variant="outline" className="w-full" size="sm">
