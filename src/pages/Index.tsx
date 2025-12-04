@@ -2,7 +2,7 @@ import { useSDK } from "@metamask/sdk-react";
 import { useEffect } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { ContractInteraction } from "@/components/ContractInteraction";
-import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from "@/components/ui/brutal-card";
+import { DocumentationDialog } from "@/components/DocumentationDialog";
 import { POLYGON_MAINNET_CHAIN_ID, CONTRACT_ADDRESS } from "@/lib/contractABI";
 import { useERC1155Contract } from "@/hooks/useERC1155Contract";
 import { useTradeContract } from "@/hooks/useTradeContract";
@@ -166,10 +166,11 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t-thick border-border bg-card mt-12 py-6">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 flex items-center justify-between">
           <p className="text-sm font-bold text-muted-foreground uppercase">
             :)
           </p>
+          <DocumentationDialog />
         </div>
       </footer>
     </div>
