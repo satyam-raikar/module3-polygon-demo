@@ -87,11 +87,24 @@ const Index = () => {
             </div>
 
             {/* Contract Details Section */}
-            <div className="mb-4 p-4 bg-muted border-2 border-border">
-              <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
-                ERC1155 Contract on Polygon Mainnet
+            <div className="mb-4 p-4 bg-muted border-2 border-border space-y-3">
+              <div>
+                <div className="text-xs font-bold uppercase text-muted-foreground mb-1">
+                  ERC1155 Token Contract (Polygon)
+                </div>
+                <div className="font-mono text-sm break-all">{CONTRACT_ADDRESS}</div>
               </div>
-              <div className="font-mono text-sm break-all">{CONTRACT_ADDRESS}</div>
+              <div>
+                <div className="text-xs font-bold uppercase text-primary mb-1">
+                  Trade Contract (Polygon)
+                </div>
+                <div className="font-mono text-sm break-all">{tradeContractAddress}</div>
+              </div>
+              {CONTRACT_ADDRESS === tradeContractAddress && (
+                <div className="text-xs text-destructive font-bold bg-destructive/10 p-2 border border-destructive">
+                  ⚠️ Warning: Both contracts have the same address. The Trade Contract should be a separate address!
+                </div>
+              )}
             </div>
 
             {!connected ? (
