@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ABI } from "@/lib/contractABI";
+import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
 
 interface UseERC1155ContractProps {
   contractAddress: string;
@@ -72,13 +73,17 @@ export const useERC1155Contract = ({
 
       setBalances(newBalances);
 
-      // Check if the ERC1155 contract itself is approved (for burns)
-      // We check if the contract is approved to operate on its own tokens
-      const approved = await contract.isApprovedForAll(
-        userAddress,
-        contractAddress
-      );
-      setIsApproved(approved);
+      // Check if TRADE CONTRACT is approved as operator on ERC1155
+      // This allows trade contract to burn tokens on behalf of user
+      if (TRADE_CONTRACT_ADDRESS) {
+        const approved = await contract.isApprovedForAll(
+          userAddress,
+          TRADE_CONTRACT_ADDRESS
+        );
+        setIsApproved(approved);
+      } else {
+        setIsApproved(false);
+      }
     } catch (error) {
       console.error("Error loading balances and approval:", error);
     } finally {
@@ -86,15 +91,16 @@ export const useERC1155Contract = ({
     }
   };
 
-  // Approve contract for burning tokens
+  // Approve TRADE CONTRACT for burning tokens
   const handleApproval = async () => {
     if (!isWalletConnected) return { success: false, error: "Wallet not connected" };
+    if (!TRADE_CONTRACT_ADDRESS) return { success: false, error: "Trade contract address not set" };
 
     try {
       setCheckingApproval(true);
       const contract = await getWriteContract();
-      // Approve the ERC1155 contract itself to enable burns
-      const tx = await contract.setApprovalForAll(contractAddress, true);
+      // Approve the TRADE CONTRACT to operate on ERC1155 tokens
+      const tx = await contract.setApprovalForAll(TRADE_CONTRACT_ADDRESS, true);
       await tx.wait();
       setIsApproved(true);
       return { success: true };
@@ -106,15 +112,16 @@ export const useERC1155Contract = ({
     }
   };
 
-  // Revoke contract approval
+  // Revoke TRADE CONTRACT approval
   const handleRevoke = async () => {
     if (!isWalletConnected) return { success: false, error: "Wallet not connected" };
+    if (!TRADE_CONTRACT_ADDRESS) return { success: false, error: "Trade contract address not set" };
 
     try {
       setCheckingApproval(true);
       const contract = await getWriteContract();
-      // Revoke approval from the ERC1155 contract
-      const tx = await contract.setApprovalForAll(contractAddress, false);
+      // Revoke approval from the TRADE CONTRACT
+      const tx = await contract.setApprovalForAll(TRADE_CONTRACT_ADDRESS, false);
       await tx.wait();
       setIsApproved(false);
       return { success: true };

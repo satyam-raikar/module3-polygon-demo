@@ -24,16 +24,34 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     );
   };
 
-  // Mint a free token (0-2)
-  const mintToken = async (tokenId: number) => {
+  // Get read-only contract instance
+  const getReadContract = () => {
+    const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
+    return new ethers.Contract(
+      TRADE_CONTRACT_ADDRESS,
+      TRADE_CONTRACT_ABI,
+      provider
+    );
+  };
+
+  // Check if user can mint base tokens (cooldown check)
+  const canMintBase = async (userAddress: string): Promise<boolean> => {
+    try {
+      const contract = getReadContract();
+      return await contract.canMintBase(userAddress);
+    } catch (error) {
+      console.error("Error checking mint cooldown:", error);
+      return false;
+    }
+  };
+
+  // Mint a base token (0-2) via trade contract
+  const mintToken = async (tokenId: number, amount: number = 1) => {
     try {
       setLoading(tokenId);
       const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
-
-      const tx = await contract.mint(userAddress, tokenId, 1, "0x");
+      
+      const tx = await contract.mintBase(tokenId, amount);
       await tx.wait();
 
       onSuccess?.();
@@ -46,32 +64,14 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     }
   };
 
-  // Forge a token by burning required tokens (3-6)
-  const forgeToken = async (
-    tokenId: number,
-    burnTokenIds: number[],
-    burnAmounts: number[]
-  ) => {
+  // Forge a token (3-6) - contract handles burning automatically
+  const forgeToken = async (targetId: number) => {
     try {
-      setLoading(tokenId);
+      setLoading(targetId);
       const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
 
-      // First burn the required tokens
-      for (let i = 0; i < burnTokenIds.length; i++) {
-        const burnTx = await contract.burn(
-          userAddress,
-          burnTokenIds[i],
-          burnAmounts[i]
-        );
-        await burnTx.wait();
-      }
-
-      // Then mint the new token
-      const mintTx = await contract.mint(userAddress, tokenId, 1, "0x");
-      await mintTx.wait();
+      const tx = await contract.forge(targetId);
+      await tx.wait();
 
       onSuccess?.();
       return { success: true };
@@ -83,16 +83,13 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     }
   };
 
-  // Burn a token (get nothing back)
-  const burnToken = async (tokenId: number) => {
+  // Burn a token 3-6 (get nothing back)
+  const burnToken = async (tokenId: number, amount: number = 1) => {
     try {
       setLoading(tokenId);
       const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
 
-      const tx = await contract.burn(userAddress, tokenId, 1);
+      const tx = await contract.burnTop(tokenId, amount);
       await tx.wait();
 
       onSuccess?.();
@@ -105,22 +102,18 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     }
   };
 
-  // Trade a token for one of [0-2]
-  const tradeToken = async (burnTokenId: number, receiveTokenId: number) => {
+  // Trade a token for a base token (0-2)
+  const tradeToken = async (
+    giveId: number,
+    giveAmount: number,
+    receiveId: number
+  ) => {
     try {
-      setLoading(burnTokenId);
+      setLoading(`trade-${giveId}`);
       const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
 
-      // Burn the token
-      const burnTx = await contract.burn(userAddress, burnTokenId, 1);
-      await burnTx.wait();
-
-      // Mint the new token
-      const mintTx = await contract.mint(userAddress, receiveTokenId, 1, "0x");
-      await mintTx.wait();
+      const tx = await contract.tradeForBase(giveId, giveAmount, receiveId);
+      await tx.wait();
 
       onSuccess?.();
       return { success: true };
@@ -132,12 +125,29 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     }
   };
 
+  // Get exchange rate for trading
+  const getExchangeRate = async (
+    giveId: number,
+    receiveId: number
+  ): Promise<number> => {
+    try {
+      const contract = getReadContract();
+      const rate = await contract.getExchangeRate(giveId, receiveId);
+      return Number(rate);
+    } catch (error) {
+      console.error("Error getting exchange rate:", error);
+      return 0;
+    }
+  };
+
   return {
     loading,
     mintToken,
     forgeToken,
     burnToken,
     tradeToken,
+    canMintBase,
+    getExchangeRate,
     contractAddress: TRADE_CONTRACT_ADDRESS,
   };
 };
