@@ -139,7 +139,9 @@ export const CustomMintingWorkflows = ({
         }
       }
     } catch (error) {
-      console.error("Error checking cooldown:", error);
+      // Silently fail - contract might not be deployed or address might be wrong
+      console.warn("Cooldown check failed (contract may not exist at this address):", error);
+      setCooldownEnd(null);
     }
   };
 
