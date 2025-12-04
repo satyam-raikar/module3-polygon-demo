@@ -3,8 +3,55 @@ import { BrutalCard, BrutalCardContent, BrutalCardHeader, BrutalCardTitle } from
 import { BrutalButton } from "./ui/brutal-button";
 import { BrutalInput } from "./ui/brutal-input";
 import { toast } from "sonner";
+import { Code, FileText } from "lucide-react";
 import { useERC1155Contract } from "@/hooks/useERC1155Contract";
 import { useTradeContract } from "@/hooks/useTradeContract";
+import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
+
+const CONTRACT_FUNCTIONS = [
+  {
+    name: "mintBase",
+    signature: "mintBase(uint256 id, uint256 amount)",
+    description: "Mint base tokens (0-2). 60 second cooldown between mints.",
+    type: "write",
+  },
+  {
+    name: "forge",
+    signature: "forge(uint256 targetId)",
+    description: "Forge tokens 3-6 by burning required base tokens. Token 3: burn 0+1, Token 4: burn 1+2, Token 5: burn 0+2, Token 6: burn 0+1+2.",
+    type: "write",
+  },
+  {
+    name: "burnTop",
+    signature: "burnTop(uint256 id, uint256 amount)",
+    description: "Burn tokens 3-6 for no reward. Irreversible.",
+    type: "write",
+  },
+  {
+    name: "tradeForBase",
+    signature: "tradeForBase(uint256 giveId, uint256 giveAmount, uint256 receiveId)",
+    description: "Trade any token for base tokens (0-2) at admin-configured exchange rates.",
+    type: "write",
+  },
+  {
+    name: "canMintBase",
+    signature: "canMintBase(address user) → bool",
+    description: "Check if user can mint (cooldown expired).",
+    type: "view",
+  },
+  {
+    name: "lastBaseMintTimestamp",
+    signature: "lastBaseMintTimestamp(address) → uint256",
+    description: "Get the last mint timestamp for cooldown calculation.",
+    type: "view",
+  },
+  {
+    name: "getExchangeRate",
+    signature: "getExchangeRate(uint256 giveId, uint256 receiveId) → uint256",
+    description: "Get exchange rate for trading tokens.",
+    type: "view",
+  },
+];
 
 interface CustomMintingWorkflowsProps {
   contractAddress: string;
@@ -226,6 +273,33 @@ export const CustomMintingWorkflows = ({
 
   return (
     <div className="space-y-8">
+      {/* Contract Functions Reference */}
+      <div>
+        <h3 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
+          <Code className="w-5 h-5" />
+          <span className="bg-muted text-muted-foreground px-3 py-1">Trade Contract Functions</span>
+          <span className="text-xs font-mono text-muted-foreground">{TRADE_CONTRACT_ADDRESS.slice(0, 10)}...</span>
+        </h3>
+        <BrutalCard>
+          <BrutalCardContent className="py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {CONTRACT_FUNCTIONS.map((fn) => (
+                <div key={fn.name} className="border-2 border-border p-3 bg-background">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-xs font-bold uppercase px-2 py-0.5 ${fn.type === 'write' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                      {fn.type}
+                    </span>
+                    <span className="font-mono font-bold text-sm">{fn.name}</span>
+                  </div>
+                  <div className="font-mono text-xs text-muted-foreground mb-2 break-all">{fn.signature}</div>
+                  <p className="text-xs text-muted-foreground">{fn.description}</p>
+                </div>
+              ))}
+            </div>
+          </BrutalCardContent>
+        </BrutalCard>
+      </div>
+
       {/* Free Mint Tokens 0-2 */}
       <div>
         <h3 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
