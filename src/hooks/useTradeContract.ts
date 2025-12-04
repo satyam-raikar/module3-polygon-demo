@@ -45,6 +45,18 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     }
   };
 
+  // Get last mint timestamp for cooldown calculation
+  const getLastMintTimestamp = async (userAddress: string): Promise<number> => {
+    try {
+      const contract = getReadContract();
+      const timestamp = await contract.lastBaseMintTimestamp(userAddress);
+      return Number(timestamp);
+    } catch (error) {
+      console.error("Error getting last mint timestamp:", error);
+      return 0;
+    }
+  };
+
   // Mint a base token (0-2) via trade contract
   const mintToken = async (tokenId: number, amount: number = 1) => {
     try {
@@ -147,6 +159,7 @@ export const useTradeContract = ({ onSuccess }: UseTradeContractProps = {}) => {
     burnToken,
     tradeToken,
     canMintBase,
+    getLastMintTimestamp,
     getExchangeRate,
     contractAddress: TRADE_CONTRACT_ADDRESS,
   };
