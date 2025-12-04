@@ -451,7 +451,7 @@ export const CustomMintingWorkflows = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {[0, 1, 2, 3, 4, 5, 6].map((tokenId) => {
+                {[0, 1, 2].map((tokenId) => {
                   const balance = balances[tokenId] || 0;
                   return (
                     <BrutalCard key={tokenId}>
