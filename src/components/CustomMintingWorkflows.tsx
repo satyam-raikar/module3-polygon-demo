@@ -109,6 +109,7 @@ export const CustomMintingWorkflows = ({
     forgeToken,
     burnToken,
     tradeToken,
+    contractAddress: tradeContractAddress,
   } = useTradeContract({
     onSuccess: () => {
       loadBalancesAndApproval();
@@ -239,8 +240,8 @@ export const CustomMintingWorkflows = ({
       return;
     }
 
-    const burnAmounts = recipe.tokensToBurn.map(() => 1);
-    const result = await forgeToken(tokenId, recipe.tokensToBurn, burnAmounts);
+    // Trade contract handles burning automatically
+    const result = await forgeToken(tokenId);
 
     if (result.success) {
       toast.success(`Successfully forged Token ${tokenId}!`);
@@ -280,7 +281,7 @@ export const CustomMintingWorkflows = ({
       return;
     }
 
-    const result = await tradeToken(burnTokenId, receiveTokenId);
+    const result = await tradeToken(burnTokenId, 1, receiveTokenId);
     
     if (result.success) {
       toast.success(
