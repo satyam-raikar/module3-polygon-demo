@@ -1,4 +1,4 @@
-# 🧱 ERC-1155 Trade & Forge System – Module 3 Assignment [DEMO 👈](https://module3-polygon-demo.lovable.app)
+# 🧱 ERC-1155 Trade & Forge System – Module 3 Assignment
 
 This repository contains a **two-contract on-chain crafting and trading system** built using **Solidity (v0.8.27)** and **OpenZeppelin Contracts v5**.
 
@@ -8,8 +8,6 @@ The system allows:
 - Burning tokens permanently
 - Trading any token into base tokens using admin-defined rates
 - Full role-based access control and operator permissions
-
-
 
 ---
 
