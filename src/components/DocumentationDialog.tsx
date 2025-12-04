@@ -5,7 +5,8 @@ import { BookOpen } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/contractABI";
 import { TRADE_CONTRACT_ADDRESS } from "@/lib/tradeContractABI";
 export const DocumentationDialog = () => {
-  return <Dialog>
+  return (
+    <Dialog>
       <DialogTrigger asChild>
         <BrutalButton variant="outline" size="sm" className="gap-2">
           <BookOpen className="w-4 h-4" />
@@ -24,12 +25,13 @@ export const DocumentationDialog = () => {
                 Overview
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground mb-3">
-                This dApp interacts with an ERC1155 token collection on Polygon Mainnet through a dedicated Trade Contract. 
-                The collection consists of 7 tokens (IDs 0-6) with unique minting, forging, burning, and trading mechanics.
+                This dApp interacts with an ERC1155 token collection on Polygon Mainnet through a dedicated Trade
+                Contract. The collection consists of 7 tokens (IDs 0-6) with unique minting, forging, burning, and
+                trading mechanics.
               </p>
               <div className="bg-muted p-3 border-2 border-border text-sm">
-                <strong>Key Concept:</strong> The Trade Contract acts as an intermediary that has minter and burner roles 
-                on the ERC1155 contract, enabling complex token operations like forging and trading.
+                <strong>Key Concept:</strong> The Trade Contract acts as an intermediary that has minter and burner
+                roles on the ERC1155 contract, enabling complex token operations like forging and trading.
               </div>
             </section>
 
@@ -47,7 +49,9 @@ export const DocumentationDialog = () => {
                 <div className="bg-muted p-3 border-2 border-border">
                   <div className="font-bold uppercase text-xs text-muted-foreground mb-1">Trade Contract</div>
                   <code className="font-mono text-xs break-all">{TRADE_CONTRACT_ADDRESS}</code>
-                  <p className="text-xs text-muted-foreground mt-2">Handles minting, forging, burning, and trading logic</p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Handles minting, forging, burning, and trading logic
+                  </p>
                 </div>
               </div>
             </section>
@@ -59,7 +63,8 @@ export const DocumentationDialog = () => {
               </h3>
               <div className="space-y-3 text-sm">
                 <p className="text-muted-foreground">
-                  Before performing <strong>any</strong> write operations, you must approve the Trade Contract as an operator.
+                  Before performing <strong>any</strong> write operations, you must approve the Trade Contract as an
+                  operator.
                 </p>
                 <div className="bg-muted p-4 border-2 border-border">
                   <div className="font-bold mb-2">Why is approval needed?</div>
@@ -72,14 +77,20 @@ export const DocumentationDialog = () => {
                 <div className="bg-muted p-4 border-2 border-border">
                   <div className="font-bold mb-2">How approval works:</div>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs">
-                    <li>Call <code className="bg-background px-1">setApprovalForAll(tradeContract, true)</code> on the ERC1155 contract</li>
+                    <li>
+                      Call <code className="bg-background px-1">setApprovalForAll(tradeContract, true)</code> on the
+                      ERC1155 contract
+                    </li>
                     <li>This is a one-time operation per wallet</li>
-                    <li>You can revoke approval anytime by setting it to <code className="bg-background px-1">false</code></li>
+                    <li>
+                      You can revoke approval anytime by setting it to <code className="bg-background px-1">false</code>
+                    </li>
                     <li>Approval status is shown in the UI before each operation</li>
                   </ul>
                 </div>
                 <div className="bg-destructive/10 border-2 border-destructive p-3">
-                  <strong>Note:</strong> Minting base tokens (0-2) does NOT require approval since it creates new tokens rather than moving existing ones.
+                  <strong>Note:</strong> Minting base tokens (0-2) does NOT require approval since it creates new tokens
+                  rather than moving existing ones.
                 </div>
               </div>
             </section>
@@ -93,7 +104,7 @@ export const DocumentationDialog = () => {
                 <div className="bg-muted p-4 border-2 border-border">
                   <code className="font-mono font-bold text-base">mintBase(uint256 id, uint256 amount)</code>
                 </div>
-                
+
                 <div>
                   <div className="font-bold mb-2">Eligible Tokens:</div>
                   <div className="grid grid-cols-3 gap-2">
@@ -128,7 +139,9 @@ export const DocumentationDialog = () => {
                       <span>No maximum supply - mint as many as you want</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="bg-muted-foreground text-background px-2 py-0.5 text-xs font-bold">NO APPROVAL</span>
+                      <span className="bg-muted-foreground text-background px-2 py-0.5 text-xs font-bold">
+                        NO APPROVAL
+                      </span>
                       <span>Does not require contract approval</span>
                     </li>
                   </ul>
@@ -138,7 +151,8 @@ export const DocumentationDialog = () => {
                   <div className="font-bold mb-1">Cooldown Check:</div>
                   <p className="text-xs text-muted-foreground">
                     Use <code className="bg-muted px-1">canMintBase(address)</code> to check if cooldown has expired.
-                    Use <code className="bg-muted px-1">lastBaseMintTimestamp(address)</code> to see when the user last minted.
+                    Use <code className="bg-muted px-1">lastBaseMintTimestamp(address)</code> to see when the user last
+                    minted.
                   </p>
                 </div>
               </div>
@@ -155,8 +169,8 @@ export const DocumentationDialog = () => {
                 </div>
 
                 <p className="text-muted-foreground">
-                  Forging creates higher-tier tokens (3-6) by permanently burning specific combinations of base tokens (0-2). 
-                  The contract automatically handles the burning process.
+                  Forging creates higher-tier tokens (3-6) by permanently burning specific combinations of base tokens
+                  (0-2). The contract automatically handles the burning process.
                 </p>
 
                 <div>
@@ -228,7 +242,9 @@ export const DocumentationDialog = () => {
                   <div className="font-bold mb-2">Conditions & Rules:</div>
                   <ul className="space-y-2 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">APPROVAL</span>
+                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">
+                        APPROVAL
+                      </span>
                       <span>Requires Trade Contract approval (setApprovalForAll)</span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -247,15 +263,15 @@ export const DocumentationDialog = () => {
                 </div>
 
                 <div className="bg-destructive/10 border-2 border-destructive p-3">
-                  <strong>Important:</strong> Forged tokens (3-6) cannot be forged into other tokens. 
-                  They can only be burned (destroyed) or traded for base tokens.
+                  <strong>Important:</strong> Forged tokens (3-6) cannot be forged into other tokens. They can only be
+                  burned (destroyed) or traded for base tokens.
                 </div>
               </div>
             </section>
 
             {/* BURNING Section */}
             <section>
-              <h3 className="text-xl font-bold uppercase mb-3 bg-destructive text-destructive-foreground px-3 py-1 inline-block">
+              <h3 className="text-xl font-bold uppercase mb-3 bg-secondary text-destructive-foreground px-3 py-1 inline-block">
                 3. Burning Tokens
               </h3>
               <div className="space-y-4 text-sm">
@@ -264,8 +280,8 @@ export const DocumentationDialog = () => {
                 </div>
 
                 <p className="text-muted-foreground">
-                  Burning permanently destroys tokens with <strong>no reward or output</strong>. 
-                  This is a purely destructive operation.
+                  Burning permanently destroys tokens with <strong>no reward or output</strong>. This is a purely
+                  destructive operation.
                 </p>
 
                 <div>
@@ -293,7 +309,9 @@ export const DocumentationDialog = () => {
                   <div className="font-bold mb-2">Conditions & Rules:</div>
                   <ul className="space-y-2 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">APPROVAL</span>
+                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">
+                        APPROVAL
+                      </span>
                       <span>Requires Trade Contract approval</span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -301,19 +319,23 @@ export const DocumentationDialog = () => {
                       <span>Must have sufficient token balance to burn</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">NO REWARD</span>
+                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">
+                        NO REWARD
+                      </span>
                       <span>You receive nothing in return - tokens are simply destroyed</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="bg-muted-foreground text-background px-2 py-0.5 text-xs font-bold">IRREVERSIBLE</span>
+                      <span className="bg-muted-foreground text-background px-2 py-0.5 text-xs font-bold">
+                        IRREVERSIBLE
+                      </span>
                       <span>Cannot be undone - burned tokens are gone forever</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="bg-destructive/10 border-2 border-destructive p-3">
-                  <strong>Warning:</strong> This is different from forging! Burning gives you nothing back. 
-                  Only use this if you intentionally want to destroy tokens.
+                  <strong>Warning:</strong> This is different from forging! Burning gives you nothing back. Only use
+                  this if you intentionally want to destroy tokens.
                 </div>
               </div>
             </section>
@@ -325,11 +347,14 @@ export const DocumentationDialog = () => {
               </h3>
               <div className="space-y-4 text-sm">
                 <div className="bg-muted p-4 border-2 border-border">
-                  <code className="font-mono font-bold text-base">tradeForBase(uint256 giveId, uint256 giveAmount, uint256 receiveId)</code>
+                  <code className="font-mono font-bold text-base">
+                    tradeForBase(uint256 giveId, uint256 giveAmount, uint256 receiveId)
+                  </code>
                 </div>
 
                 <p className="text-muted-foreground">
-                  Trading allows you to exchange any token (0-6) for base tokens (0-2) at admin-configured exchange rates.
+                  Trading allows you to exchange any token (0-6) for base tokens (0-2) at admin-configured exchange
+                  rates.
                 </p>
 
                 <div className="bg-muted p-4 border-2 border-border">
@@ -346,8 +371,8 @@ export const DocumentationDialog = () => {
                 <div className="bg-background border-2 border-border p-4">
                   <div className="font-bold mb-2">Exchange Rates:</div>
                   <p className="text-muted-foreground text-xs mb-2">
-                    Rates are configured by the contract admin and can vary between token pairs.
-                    Use <code className="bg-muted px-1">getExchangeRate(giveId, receiveId)</code> to check current rates.
+                    Rates are configured by the contract admin and can vary between token pairs. Use{" "}
+                    <code className="bg-muted px-1">getExchangeRate(giveId, receiveId)</code> to check current rates.
                   </p>
                   <div className="text-xs text-muted-foreground">
                     Example: If rate is 2, trading 1 Token gives you 2 of the receive token.
@@ -358,7 +383,9 @@ export const DocumentationDialog = () => {
                   <div className="font-bold mb-2">Conditions & Rules:</div>
                   <ul className="space-y-2 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">APPROVAL</span>
+                      <span className="bg-destructive text-destructive-foreground px-2 py-0.5 text-xs font-bold">
+                        APPROVAL
+                      </span>
                       <span>Requires Trade Contract approval</span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -377,8 +404,8 @@ export const DocumentationDialog = () => {
                 </div>
 
                 <div className="bg-primary/10 border-2 border-primary p-3">
-                  <strong>Tip:</strong> Check the exchange rate before trading! Higher-tier tokens (3-6) 
-                  may have favorable rates when trading for base tokens.
+                  <strong>Tip:</strong> Check the exchange rate before trading! Higher-tier tokens (3-6) may have
+                  favorable rates when trading for base tokens.
                 </div>
               </div>
             </section>
@@ -430,9 +457,7 @@ export const DocumentationDialog = () => {
 
             {/* Network Info */}
             <section>
-              <h3 className="text-xl font-bold uppercase mb-3 bg-accent px-3 py-1 inline-block">
-                Network Information
-              </h3>
+              <h3 className="text-xl font-bold uppercase mb-3 bg-accent px-3 py-1 inline-block">Network Information</h3>
               <div className="text-sm space-y-2 text-muted-foreground">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted p-3 border-2 border-border">
@@ -447,12 +472,12 @@ export const DocumentationDialog = () => {
                     <div className="font-bold text-foreground">Currency</div>
                     <div>MATIC (for gas)</div>
                   </div>
-                  
                 </div>
               </div>
             </section>
           </div>
         </ScrollArea>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
