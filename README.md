@@ -1,33 +1,290 @@
-# Welcome to your Lovable project
+# 🧱 ERC-1155 Trade & Forge System – Module 3 Assignment
 
-## Project info
+This repository contains a **two-contract on-chain crafting and trading system** built using **Solidity (v0.8.27)** and **OpenZeppelin Contracts v5**.
 
-**URL**: https://lovable.dev/projects/7309ebab-b71e-4df2-9d1d-55bad3afbde0
+The system allows:
+- Public minting of base tokens with cooldown
+- Forging of higher-tier tokens using burn mechanics
+- Burning tokens permanently
+- Trading any token into base tokens using admin-defined rates
+- Full role-based access control and operator permissions
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 📦 Contracts Overview
 
-**Use Lovable**
+| Contract | Purpose |
+|----------|---------|
+| `AModule3.sol` | Core ERC-1155 token contract |
+| `tradeContract.sol` | Game logic for minting, forging, trading, and burning |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7309ebab-b71e-4df2-9d1d-55bad3afbde0) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🔐 1. AModule3 – ERC-1155 Token Contract
 
-**Use your preferred IDE**
+This is the core multi-token contract.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### ✅ Features
+- ERC-1155 multi-token standard
+- Burnable tokens
+- Supply tracking per token
+- Role-based access control
+- Dynamic metadata URI support
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### ✅ Roles
+
+| Role | Purpose |
+|------|---------|
+| `DEFAULT_ADMIN_ROLE` | Full administrative control |
+| `MINTER_ROLE` | Can mint tokens |
+| `URI_SETTER_ROLE` | Can update metadata URI |
+
+### ✅ Minting
+Only addresses with `MINTER_ROLE` can mint:
+```solidity
+mint(address account, uint256 id, uint256 amount)
+mintBatch(address to, uint256[] ids, uint256[] amounts)
+```
+
+### ✅ Burning
+Any holder can burn their own tokens:
+```solidity
+burn(address account, uint256 id, uint256 amount)
+burnBatch(address account, uint256[] ids, uint256[] amounts)
+```
+
+---
+
+## ⚙️ 2. tradeContract – Version 1
+
+This contract controls:
+- Cooldown-based minting
+- On-chain forging (crafting)
+- Token trading
+- Permanent burning of forged tokens
+- Exchange rate economy
+
+The `tradeContract` **must be granted `MINTER_ROLE` on `AModule3`** so it can mint after burns.
+
+---
+
+## 🪙 Token System
+
+There are exactly **7 token IDs** in the system:
+
+| ID | Type | Description |
+|----|------|-------------|
+| `0` | Base | Public mintable |
+| `1` | Base | Public mintable |
+| `2` | Base | Public mintable |
+| `3` | Forged | Crafted from `0 + 1` |
+| `4` | Forged | Crafted from `1 + 2` |
+| `5` | Forged | Crafted from `0 + 2` |
+| `6` | Forged | Crafted from `0 + 1 + 2` |
+
+✅ No supply limits on any token.
+
+---
+
+## ⏱️ 3. Base Token Minting (Tokens 0–2)
+
+```solidity
+mintBase(uint256 id, uint256 amount)
+```
+
+### Rules
+- Only token IDs: `0`, `1`, `2`
+- Anyone can mint
+- 60-second cooldown per wallet
+- Cooldown applies globally across all base tokens
+- Unlimited supply
+
+---
+
+## 🔧 4. Forging (Crafting) System
+
+Users can craft higher-tier tokens by burning base tokens.
+
+```solidity
+forge(uint256 targetId)
+```
+
+### Forge Recipes
+
+| Output | Required Burns |
+|--------|----------------|
+| `3` | `0 + 1` |
+| `4` | `1 + 2` |
+| `5` | `0 + 2` |
+| `6` | `0 + 1 + 2` |
+
+✅ Uses batch burning for gas optimization  
+✅ Requires operator approval  
+❌ Tokens `3–6` cannot be forged into anything else  
+❌ No reverse crafting is possible  
+
+---
+
+## 🔥 5. Burning Forged Tokens (No Reward)
+
+```solidity
+burnTop(uint256 id, uint256 amount)
+```
+
+### Rules
+- Only tokens `3–6` are allowed
+- Tokens are destroyed permanently
+- No rewards are given in return
+
+---
+
+## 🔁 6. Trading System (Any Token → Base Tokens)
+
+Users can trade **any token (0–6)** into base tokens (`0–2`).
+
+```solidity
+tradeForBase(uint256 giveId, uint256 giveAmount, uint256 receiveId)
+```
+
+### Exchange Rates
+Admin configures the economy using:
+```solidity
+setExchangeRate(giveId, receiveId, rate)
+```
+
+Meaning:
+> 1 unit of giveId → rate units of receiveId
+
+Example:
+```solidity
+setExchangeRate(6, 0, 5);
+```
+Burning 1x token(6) gives 5x token(0).
+
+✅ Burn + mint happens atomically  
+✅ Fully customizable economy  
+
+---
+
+## 👑 7. Admin Controls
+
+Only the **owner of tradeContract** can:
+- Configure exchange rates
+- Control trading routes
+- Tune the token economy
+
+---
+
+## 🔐 8. Approval Model
+
+Before forging, burning or trading, users must approve:
+
+```solidity
+setApprovalForAll(tradeContract, true)
+```
+
+Otherwise all burn operations will revert.
+
+---
+
+## 🔄 9. Complete User Flow Example
+
+```
+1. User mints token(0)
+2. Waits 60 seconds
+3. User mints token(1)
+4. User approves tradeContract
+5. User forges token(3)
+6. User trades token(3) → token(2)
+7. User burns token(4) permanently
+```
+
+All operations are:
+✅ Trustless  
+✅ Non-custodial  
+✅ Fully on-chain  
+
+---
+
+## 🛡️ 10. Security Design
+
+| Protection | Status |
+|------------|--------|
+| Role-based access control | ✅ |
+| Operator approvals | ✅ |
+| Reentrancy protection | ✅ |
+| No reverse forging | ✅ |
+| No unrestricted minting | ✅ |
+| Admin-only rate control | ✅ |
+
+---
+
+## 🚀 11. Deployment Steps
+
+1. Deploy `AModule3`
+   - Assign `DEFAULT_ADMIN_ROLE`
+   - Assign `MINTER_ROLE` later
+
+2. Deploy `tradeContract`
+   - Pass the ERC-1155 contract address
+
+3. Grant minting rights:
+```solidity
+grantRole(MINTER_ROLE, tradeContract)
+```
+
+4. Users approve:
+```solidity
+setApprovalForAll(tradeContract, true)
+```
+
+✅ System is now live.
+
+---
+
+## 🧾 Versioning
+
+- ✅ **tradeContract – Version 1**
+- ✅ Batch burning enabled
+- ✅ Production-ready baseline
+
+Future upgrades may include:
+- Batch forging
+- Batch trading
+- Signature-based minting
+- Meta-transactions
+- Upgradeable proxy pattern
+
+---
+
+## ✅ Summary
+
+This system delivers a **fully on-chain, gas-optimized crafting and trading economy** using ERC-1155 with:
+
+- Public minting with cooldown
+- Controlled forging
+- Permanent burns
+- Flexible trading economy
+- Hardened security model
+
+Ideal for:
+- Web3 games
+- NFT crafting systems
+- On-chain economies
+- DeFi-integrated assets
+
+## 🔧 Clone and Run Project Locally
+
+If you want to work locally using your own IDE, you can clone this repo.
 
 Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone <GIT_URL>
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd <PROJECT_NAME>
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -35,39 +292,3 @@ npm i
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7309ebab-b71e-4df2-9d1d-55bad3afbde0) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
